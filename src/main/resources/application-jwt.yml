@@ -1,6 +1,0 @@
-jwt:
-  secret: SNqu60AtZLyqzvEqnlXfNm6Nx8OPsrmnm6BgxV8LGWP
-  access:
-    expiration: 180000
-  refresh:
-    expiration: 2592000
