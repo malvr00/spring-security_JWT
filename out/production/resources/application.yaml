@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: hed-admin
+  web:
+    error:
+      include-stacktrace: never
+################    PROFILES   ################
+  profiles:
+    active: dev
+    include: jwt
+################    MULTIPART   ################
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+################    JPA   ################
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
+        default_batch_fetch_size: 100
+    open-in-view: false
+################    DATASOURCE   ################
+  datasource:
+    hikari:
+      maximum-pool-size: 30           # 동시 처리량 대비 적절한 값 (서비스 규모 따라 조정)
+      minimum-idle: 10                # 유휴 커넥션 최소 수
+      idle-timeout: 600000            # 10분 이상 사용 안한 커넥션 제거
+      max-lifetime: 1800000           # 30분마다 커넥션 갱신 (DB가 커넥션 강제 종료할 수 있기 때문에 안전 장치)
+      keepalive-time: 300000          # 5분마다 ping처럼 커넥션 유지 (idle-timeout보다 작아야 함)
