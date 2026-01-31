@@ -10,20 +10,20 @@ import java.sql.Timestamp;
 @Getter
 @Entity
 @Builder
-@Table(name = "admin_user")
+@Table(name = "users")
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "admin_user_id")
+    @Column(name = "user_id")
     private Long id;
+
+    private Long permissionId;
 
     @Column(nullable = false, length = 16)
     private String userId;
-
-    private Long permissionId;
 
     @Column(nullable = false)
     private String password;
@@ -34,10 +34,6 @@ public class User extends BaseTimeEntity {
     @Column(length = 16)
     private String phone;
 
-    @Column(length = 15)
-    private String ip;
-
-    private String agent;
 
     private Timestamp accessTime;
 

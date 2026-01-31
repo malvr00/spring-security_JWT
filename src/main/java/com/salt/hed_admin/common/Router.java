@@ -35,4 +35,10 @@ public class Router {
         String LOGOUT = "/logout";
     }
 
+    public interface USER_URI {
+        String BASE = "/users";
+
+        String REFRESH = "/refresh";
+    }
+
 }

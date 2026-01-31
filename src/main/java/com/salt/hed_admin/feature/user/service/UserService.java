@@ -6,12 +6,15 @@ import com.salt.hed_admin.domain.user.User;
 import com.salt.hed_admin.feature.jwt.dto.JwtUserInfo;
 import com.salt.hed_admin.feature.permission.repository.PermissionRepository;
 import com.salt.hed_admin.feature.user.dto.CustomUserDetails;
+import com.salt.hed_admin.feature.user.dto.UserSaveDto;
 import com.salt.hed_admin.feature.user.repository.UserRepository;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -43,5 +46,22 @@ public class UserService implements UserDetailsService {
                 .build();
 
         return new CustomUserDetails(info);
+    }
+
+    /**
+     * 회원가입
+     * @param param UserSaveDto.class
+     * @return 회원가입 성공 시 회원 ID
+     */
+    @Transactional
+    public long signup(UserSaveDto param) {
+        return userRepository.save(
+                User.builder()
+                        .userId(param.getUserId())
+                        .password(param.getPassword())  // 편의상 암호화 제외
+                        .name(param.getName())
+                        .phone(param.getPhone())
+                        .build()
+        ).getId();
     }
 }
