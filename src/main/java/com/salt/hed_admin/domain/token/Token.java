@@ -34,4 +34,8 @@ public class Token {
     private boolean revoked;
     private Timestamp revokedAt;
 
+    public void updateRevoked(boolean b) {
+        this.revoked = b;
+    }
+
 }

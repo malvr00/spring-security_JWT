@@ -18,4 +18,6 @@ public class JwtUserInfo {
     private String subType;
     private UserStateEnum state;
 
+    private String refreshJti;
+    private String refreshHash;
 }

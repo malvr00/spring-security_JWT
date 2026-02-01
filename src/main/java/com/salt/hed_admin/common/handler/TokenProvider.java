@@ -60,7 +60,7 @@ public class TokenProvider {
         String refreshToken = createRefreshToken(userInfo.getId(), refreshJti, refreshTokenValidity);
 
         return new TokenVO(accessToken, refreshToken,
-                accessTokenValidity.toInstant().toString(), refreshTokenValidity.toInstant().toString());
+                accessTokenValidity.toInstant().toString(), refreshTokenValidity.toInstant().toString(), refreshJti);
     }
 
     /**
@@ -134,7 +134,7 @@ public class TokenProvider {
         }
 
         return new TokenVO(headerToken, null,
-                null, null);
+                null, null, null);
     }
 
     /**

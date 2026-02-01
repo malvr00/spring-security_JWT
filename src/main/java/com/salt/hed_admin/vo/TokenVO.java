@@ -1,5 +1,6 @@
 package com.salt.hed_admin.vo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,6 +16,8 @@ public class TokenVO {
     private String refreshToken;
     private String accessExpireTime;
     private String refreshExpireTime;
+    @JsonIgnore
+    private String refreshJti;
 
     public void updateAccessToken(String accessToken) {
         this.accessToken = accessToken;

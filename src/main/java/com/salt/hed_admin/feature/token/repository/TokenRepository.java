@@ -1,5 +1,6 @@
 package com.salt.hed_admin.feature.token.repository;
 
+import com.salt.hed_admin.domain.permission.enums.PlatformType;
 import com.salt.hed_admin.domain.token.Token;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -10,4 +11,7 @@ public interface TokenRepository extends JpaRepository<Token, Long> {
     Optional<Token> findByRefreshJtiAndRevokedFalse(String refreshJti);
 
     void deleteByRefreshJti(String refreshJti);
+
+    Optional<Token> findByRefreshJtiAndUserIdAndPlatformAndRevokedFalse(String refreshJti,
+                                                                        Long userId, PlatformType platform);
 }
