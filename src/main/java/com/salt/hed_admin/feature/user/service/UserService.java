@@ -130,4 +130,20 @@ public class UserService implements UserDetailsService {
 
         return tokenProvider.createToken(jwtUserInfo);
     }
+
+    /**
+     * 로그아웃
+     * @param accessToken 비활성화 대상
+     * @return 로그아웃된 사용자 id
+     */
+    @Transactional
+    public long logout(String accessToken) {
+        Long id = tokenProvider.getId(accessToken);
+        String sid = tokenProvider.getSid(accessToken);
+
+        tokenService.updateRevoked(sid, id, PlatformType.ADMIN, true);
+
+        return id;
+    }
+    
 }

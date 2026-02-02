@@ -1,24 +1,24 @@
 package com.salt.hed_admin.feature.user.controller;
 
 import com.salt.hed_admin.common.Const;
+import com.salt.hed_admin.common.exception.ApiCustomException;
+import com.salt.hed_admin.common.exception.ErrorEnum;
+import com.salt.hed_admin.common.handler.TokenProvider;
 import com.salt.hed_admin.feature.user.dto.UserLoginDto;
 import com.salt.hed_admin.feature.user.dto.UserSaveDto;
 import com.salt.hed_admin.feature.user.service.UserService;
 import com.salt.hed_admin.feature.user.vo.UserLoginVO;
-import com.salt.hed_admin.vo.ResultVO;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import static com.salt.hed_admin.common.Router.API_VERSION.V1_BASE_PATH;
 import static com.salt.hed_admin.common.Router.BASE_URL.ADMIN;
-import static com.salt.hed_admin.common.Router.CERTIFIED_URI.LOGIN;
-import static com.salt.hed_admin.common.Router.CERTIFIED_URI.SIGN;
+import static com.salt.hed_admin.common.Router.CERTIFIED_URI.*;
 import static com.salt.hed_admin.common.Router.USER_URI.*;
 
 @Slf4j
@@ -28,6 +28,8 @@ import static com.salt.hed_admin.common.Router.USER_URI.*;
 public class UserController {
 
     private final UserService userService;
+
+    private final TokenProvider tokenProvider;
 
     /**
      * 간편 회원가입
@@ -60,5 +62,14 @@ public class UserController {
         response.setHeader(Const.JWT.REFRESH_TOKEN_HEADER, res.getToken().getRefreshToken());
 
         return res.getId();
+    }
+
+    @PostMapping(value = LOGOUT)
+    @PreAuthorize(value = "hasAnyRole('ROLE_ADMIN', 'ROLE_CS')")
+    public long logout(
+            @RequestHeader(Const.JWT.TOKEN_HEADER) String accessToken
+    ) {
+        if (accessToken == null) throw new ApiCustomException(ErrorEnum.VALID_BAD_REQUEST);
+        return userService.logout(tokenProvider.getHeaderToken(accessToken).getAccessToken());
     }
 }
