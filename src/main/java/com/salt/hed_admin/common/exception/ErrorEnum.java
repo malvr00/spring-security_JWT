@@ -33,6 +33,7 @@ public enum ErrorEnum {
     USER_FORBIDDEN_03(HttpStatus.FORBIDDEN, "fob(3) Unsupported JWT Token"),
     USER_FORBIDDEN_04(HttpStatus.FORBIDDEN, "fob(4) JWT Claims string is empty"),
     USER_FORBIDDEN_05(HttpStatus.FORBIDDEN, "fob(5) This is a blocked user"),
+    USER_FORBIDDEN_06(HttpStatus.FORBIDDEN, "fob(6) Expired Refresh Token"),
 
 
     /*

@@ -13,6 +13,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -64,6 +66,11 @@ public class UserController {
         return res.getId();
     }
 
+    /**
+     * 로그아웃
+     * @param accessToken access token
+     * @return user id
+     */
     @PostMapping(value = LOGOUT)
     @PreAuthorize(value = "hasAnyRole('ROLE_ADMIN', 'ROLE_CS')")
     public long logout(
@@ -71,5 +78,30 @@ public class UserController {
     ) {
         if (accessToken == null) throw new ApiCustomException(ErrorEnum.VALID_BAD_REQUEST);
         return userService.logout(tokenProvider.getHeaderToken(accessToken).getAccessToken());
+    }
+
+    /**
+     * 토큰 재발급
+     * @param response HttpServletResponse.class
+     * @param accessToken access token
+     * @param refreshToken refresh token
+     * @return user id
+     */
+    @PostMapping(value = REFRESH)
+    @PreAuthorize(value = "hasAnyRole('ROLE_ADMIN', 'ROLE_CS')")
+    public long refresh(
+            HttpServletResponse response,
+            @RequestHeader(Const.JWT.TOKEN_HEADER) String accessToken,
+            @RequestHeader(Const.JWT.REFRESH_TOKEN_HEADER) String refreshToken
+    ) {
+        if(accessToken == null || refreshToken == null) throw new ApiCustomException(ErrorEnum.TOKEN_EMPTY_ERROR);
+
+        String newAccessToken =
+                userService.refreshToken(tokenProvider.getHeaderToken(accessToken).getAccessToken(), refreshToken);
+
+        response.setHeader(Const.JWT.TOKEN_HEADER, newAccessToken);
+        response.setHeader(Const.JWT.REFRESH_TOKEN_HEADER, refreshToken);
+
+        return 0L;
     }
 }

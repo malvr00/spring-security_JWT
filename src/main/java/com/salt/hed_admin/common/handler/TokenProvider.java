@@ -68,7 +68,7 @@ public class TokenProvider {
      * @param userInfo 유저 간단 정보
      * @return Access token
      */
-    private String createAccessToken(JwtUserInfo userInfo, String refreshJti, Date tokenValidity) {
+    public String createAccessToken(JwtUserInfo userInfo, String refreshJti, Date tokenValidity) {
         Claims claims = Jwts.claims();
         claims.put(Const.JWT.CLAIM_ID, userInfo.getId());
         claims.put(Const.JWT.CLAIM_SID, refreshJti);

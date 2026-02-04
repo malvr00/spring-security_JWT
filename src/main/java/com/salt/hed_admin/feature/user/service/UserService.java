@@ -1,9 +1,11 @@
 package com.salt.hed_admin.feature.user.service;
 
+import com.salt.hed_admin.common.exception.ApiCustomException;
 import com.salt.hed_admin.common.exception.ErrorEnum;
 import com.salt.hed_admin.common.handler.TokenProvider;
 import com.salt.hed_admin.config.Sha256;
 import com.salt.hed_admin.domain.permission.PermissionGroup;
+import com.salt.hed_admin.domain.permission.enums.PermissionTypeEnum;
 import com.salt.hed_admin.domain.permission.enums.PlatformType;
 import com.salt.hed_admin.domain.token.Token;
 import com.salt.hed_admin.domain.user.User;
@@ -16,6 +18,10 @@ import com.salt.hed_admin.feature.user.dto.UserSaveDto;
 import com.salt.hed_admin.feature.user.repository.UserRepository;
 import com.salt.hed_admin.feature.user.vo.UserLoginVO;
 import com.salt.hed_admin.vo.TokenVO;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.security.SecurityException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,6 +33,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.Date;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -145,5 +153,70 @@ public class UserService implements UserDetailsService {
 
         return id;
     }
-    
+
+    /**
+     * Access token 재발급
+     * @param accessToken access token
+     * @param refreshToken refresh token
+     * @return 재발급된 access token
+     */
+    public String refreshToken(String accessToken, String refreshToken) {
+        try {
+            // Refresh token 1 차 검증
+            tokenProvider.isTokenValid(refreshToken);
+
+            Long id = tokenProvider.getId(accessToken);
+            String sid = tokenProvider.getSid(accessToken);
+            // Refresh token 2 차 검증
+            Token tokenInfo =
+                    tokenService.findByRefreshJtiAndUserIdAndPlatformAndRevokedFalse(sid, id, PlatformType.ADMIN);
+            // Refresh token 3 차 검증
+            if (!Objects.equals(Sha256.hmacSha256(secret, refreshToken), tokenInfo.getRefreshHash())) {
+                throw new ApiCustomException(ErrorEnum.USER_FORBIDDEN_03);
+            }
+
+            User user = findById(id);
+
+            return createAccessToken(user, sid, PermissionTypeEnum.ADMIN.name());
+
+        } catch (MalformedJwtException | SecurityException e) {
+            throw new ApiCustomException(ErrorEnum.USER_FORBIDDEN_01);
+        } catch (ExpiredJwtException e) {
+            throw new ApiCustomException(ErrorEnum.USER_FORBIDDEN_06);
+        } catch (UnsupportedJwtException e) {
+            throw new ApiCustomException(ErrorEnum.USER_FORBIDDEN_03);
+        } catch (IllegalArgumentException e) {
+            throw new ApiCustomException(ErrorEnum.USER_FORBIDDEN_04);
+        }
+
+    }
+
+    /**
+     * 회원 조회
+     * @param id 회원 ID
+     * @return 회원 정보
+     */
+    public User findById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException(ErrorEnum.USER_INFO_01.getMessage()));
+    }
+
+    /**
+     * Access token 개별 생성
+     * @param user 회원 정보
+     * @param refreshJti refresh token sid
+     * @param permissionType 회원 권한
+     * @return access token
+     */
+    protected String createAccessToken(User user, String refreshJti, String permissionType) {
+        Date accessTokenValidity = tokenProvider.getExpiration(true);
+        JwtUserInfo jwtUserInfo = JwtUserInfo.builder()
+                .id(user.getId())
+                .userId(user.getUserId())
+                .name(user.getName())
+                .permissionType(permissionType)
+                .build();
+
+        return tokenProvider.createAccessToken(jwtUserInfo, refreshJti, accessTokenValidity);
+    }
 }
