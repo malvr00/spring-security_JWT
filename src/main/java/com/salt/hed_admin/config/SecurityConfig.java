@@ -62,6 +62,7 @@ public class SecurityConfig {
 
             // 허용할 헤더
             config.setAllowedHeaders(List.of("*"));
+            config.setExposedHeaders(List.of("Authorization", "X-Refresh-Token"));
 
             // 허용할 메소드
             config.setAllowedMethods(List.of(
