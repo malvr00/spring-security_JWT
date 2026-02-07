@@ -62,6 +62,10 @@ public class SecurityConfig {
 
             // 허용할 헤더
             config.setAllowedHeaders(List.of("*"));
+            /*
+               - HEADER CORS 처리 -
+               응답해더에 Access Token, Refresh Token 값을 넣을 수 있게 추가해야함.
+             */
             config.setExposedHeaders(List.of("Authorization", "X-Refresh-Token"));
 
             // 허용할 메소드
