@@ -73,7 +73,8 @@ public enum ErrorEnum {
         VALID_XXX
         파라미터 관련 오류
      */
-    VALID_BAD_REQUEST(HttpStatus.BAD_REQUEST, "Valid fail")
+    VALID_BAD_REQUEST(HttpStatus.BAD_REQUEST, "Valid fail"),
+    TOKEN_EMPTY_ERROR(HttpStatus.BAD_REQUEST, "Token empty")
     ;
 
 
