@@ -68,7 +68,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             if (filterTokenCheck(response, token)) return;
 
             Long id = tokenProvider.getId(token);
-            createSecurityToken(response, userService, id);
+            if(!createSecurityToken(response, userService, id)) return;
 
         /*
             JWT Exception Controller MalformedJwtException
@@ -131,19 +131,19 @@ public class JwtAuthFilter extends OncePerRequestFilter {
      * @param userService - Services according to authority
      * @param id - Access token CLAIM_ID
      */
-    protected void createSecurityToken(HttpServletResponse response,
+    protected boolean createSecurityToken(HttpServletResponse response,
                                        UserService userService, Long id) throws IOException {
         UserDetails userDetails = userService.loadUserByUsername(id.toString());
 
         if (!userDetails.isEnabled()) {
             createResponseError(response, ErrorEnum.USER_LOGIN_00.getHttpStatus(), ErrorEnum.USER_LOGIN_00.getMessage());
-            return;
+            return false;
         }
 
         if (!userDetails.isAccountNonLocked()) {
             createResponseError(response, ErrorEnum.USER_FORBIDDEN_05.getHttpStatus(),
                     ErrorEnum.USER_FORBIDDEN_05.getMessage());
-            return;
+            return false;
         }
 
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
@@ -151,5 +151,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                         userDetails.getAuthorities());
 
         SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+
+        return true;
     }
 }
