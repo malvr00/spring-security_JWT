@@ -28,3 +28,8 @@ spring:
       idle-timeout: 600000            # 10분 이상 사용 안한 커넥션 제거
       max-lifetime: 1800000           # 30분마다 커넥션 갱신 (DB가 커넥션 강제 종료할 수 있기 때문에 안전 장치)
       keepalive-time: 300000          # 5분마다 ping처럼 커넥션 유지 (idle-timeout보다 작아야 함)
+# 설정 파일 별 다르게 enabled 설정하기
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true

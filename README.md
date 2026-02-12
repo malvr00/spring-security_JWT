@@ -9,6 +9,7 @@ Spring boot 4.0.x, JAVA21<br/>
 3. 간단 API 구현
 4. Custom APIExcpetion
 5. Controller Exception 처리
+6. Swagger UI 간단 설정
 
 ## API
 회원가입. 로그인. 로그아웃. 토큰 재발급
