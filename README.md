@@ -1,5 +1,6 @@
-# Spring security + JWT 테스트 토이프로젝트
-Spring boot 4.0.x, JAVA21<br/>
+# Spring Security + JWT 테스트 토이프로젝트
+Spring Boot 4.0.x, JAVA21<br/>
+자바 21 및 Spring Boot 4.0 기념 Spring Security 재정리
 
 ## 기능
 1. refresh token을 활용한 멀티로그인, 강제로그아웃, 토큰 재갱신
@@ -15,4 +16,3 @@ Spring boot 4.0.x, JAVA21<br/>
 회원가입. 로그인. 로그아웃. 토큰 재발급
 
 ## 프로젝트 설명
-- 후추 -
